@@ -1,0 +1,43 @@
+dnsmasq-base
+dnsmasq-utils # for dhcp_release
+kpartx
+parted
+arping # used for send_arp_for_ha option in nova-network
+mysql-server # NOPRIME
+python-mysqldb
+kvm
+gawk
+iptables
+ebtables
+sqlite3
+sudo
+kvm
+libvirt-bin # NOPRIME
+vlan
+curl
+rabbitmq-server # NOPRIME
+socat # used by ajaxterm
+python-mox
+python-paste
+python-migrate
+python-gflags
+python-greenlet
+python-libvirt
+python-libxml2
+python-routes
+python-netaddr
+python-pastedeploy
+python-eventlet
+python-cheetah
+python-carrot
+python-tempita
+python-sqlalchemy
+python-suds
+python-lockfile
+python-m2crypto
+python-boto
+
+# Stuff for diablo volumes
+iscsitarget
+iscsitarget-dkms
+lvm2
