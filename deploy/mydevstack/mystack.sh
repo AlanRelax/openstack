@@ -28,6 +28,7 @@ function apt_get() {
 
 apt_get update
 apt_get install `cat $FILES/apts/* | cut -d\# -f1 | grep -Ev "mysql-server|rabbitmq-server|memcached"`
+sudo PIP_DOWNLOAD_CACHE=/var/cache/pip pip install --use-mirrors `cat $FILES/pips/*`
 
 function git_clone {
 
