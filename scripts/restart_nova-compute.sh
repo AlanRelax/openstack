@@ -12,3 +12,4 @@ if [ "$?" -eq 0 ]; then
     echo "Starting nova-compute ..."
     cd $HOME/nova && (sudo sg libvirtd bin/nova-compute &)
 fi
+exit
