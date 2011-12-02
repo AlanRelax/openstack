@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 #include <libvirt/libvirt.h>
+#include <string.h>
+#include <malloc.h>
 
 /**
  * getDomainInfo:
@@ -18,15 +20,35 @@
  *
  * extract the domain 0 information
  */
-static void
-getDomainInfo(int id) {
+//static void
+
+
+void getRemoteUrl(char *ip, char **p) {
+    char s[35] = "";
+    if (strlen(ip) > 12 ) {
+        fprintf(stderr, "ip length is too long\n");
+    }
+    else {
+        strcat(s, "qemu+ssh://root@");
+        strcat(s, ip);
+        strcat(s, "/system");
+    }
+    strcpy(*p, s);
+}
+
+
+void getDomainInfo(int id, char *ip) {
     virConnectPtr conn = NULL; /* the hypervisor connection */
     virDomainPtr dom = NULL;   /* the domain being checked */
     virDomainInfo info;        /* the information being fetched */
     int ret;
+    char *p;
+    p = (char *)malloc(35*sizeof(char));
 
     /* NULL means connect to local Xen hypervisor */
-    conn = virConnectOpenReadOnly("qemu+ssh://root@10.200.200.2/system");
+    getRemoteUrl(ip, &p);
+    conn = virConnectOpenReadOnly(p);
+    free(p);
     if (conn == NULL) {
         fprintf(stderr, "Failed to connect to hypervisor\n");
         goto error;
@@ -46,7 +68,7 @@ getDomainInfo(int id) {
         goto error;
     }
 
-    printf("Domains %d: %d CPUs\n", id, info.nrVirtCpu);
+    printf("Domains %d: State is %d , %d CPUs, %ld memory\n", id, info.state, info.nrVirtCpu, info.memory);
 
 error:
     if (dom != NULL)
@@ -55,9 +77,13 @@ error:
         virConnectClose(conn);
 }
 
+
+
+
 int main() {
 
-    getDomainInfo(1);
+
+    getDomainInfo(6, "uec11-002");
 
     return(0);
 }
