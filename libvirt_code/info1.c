@@ -26,7 +26,7 @@ getDomainInfo(int id) {
     int ret;
 
     /* NULL means connect to local Xen hypervisor */
-    conn = virConnectOpenReadOnly("qemu:///system");
+    conn = virConnectOpenReadOnly("qemu+ssh://root@10.200.200.2/system");
     if (conn == NULL) {
         fprintf(stderr, "Failed to connect to hypervisor\n");
         goto error;
