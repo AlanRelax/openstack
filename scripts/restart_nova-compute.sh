@@ -10,5 +10,5 @@ sudo /etc/init.d/libvirt-bin restart
 if [ "$?" -eq 0 ]; then
     sleep 5
     echo "Starting nova-compute ..."
-    cd $HOME/nova && (sudo sg libvirtd bin/nova-compute > /dev/null 2>&1 &)
+    cd $HOME/nova && (sudo su -c "sg libvirtd bin/nova-compute > /dev/null 2>&1 &" stack)
 fi
