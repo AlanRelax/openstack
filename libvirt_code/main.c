@@ -12,16 +12,15 @@
 
 int main() {
 
-link p;
-virConnectPtr conn;
-char result[300];
+    link p;
+    virConnectPtr conn;
 
     db_init();
-p = pop_node();
-conn_init(p->host, &conn);
-strcpy(result,virConnectGetSysinfo(conn,0));
-printf("%s ", result);
-free_node(p);
+    while ((p = pop_node()) != NULL ) {
+        conn_init(p->host, &conn);
+        printf("%s", virConnectGetSysinfo(conn,0));
+        conn_close(&conn);
+    }
 //    virDomainPtr dom = NULL;   /* the domain being checked */
 //    virDomainInfo info;        /* the information being fetched */
 /*    int ret;

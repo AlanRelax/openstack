@@ -28,7 +28,6 @@ void conn_init(char *ip, virConnectPtr *conn)  {
 
     /* NULL means connect to local Xen hypervisor */
     getRemoteUrl(ip, &p);
-printf("%s\n", p);
     *conn = virConnectOpenReadOnly(p);
     free(p);
     if (*conn == NULL) {
