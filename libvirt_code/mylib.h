@@ -6,11 +6,13 @@
 #include <stdlib.h>
 
 #define FALSE 0
+#define TRUE 1
 
-typedef struct entry {
-    struct entry *link;
+typedef struct NODE *link;
+struct NODE {
     char host[12];
-} entry;
+    link next;
+};
 
 
 /* connect_base.c */
@@ -19,5 +21,8 @@ void conn_init(char *, virConnectPtr *);    // init libvirt connection
 void conn_close(virConnectPtr *);    // close libvirt connection
 
 /* db_control.c */
-int db_init(entry **);    // init db,store computing host from mysqldb into a list
-char *get_host(entry *);    // get host in list
+int db_init();    // init db,store computing host from mysqldb into a list
+link pop_node();
+void free_node(link);
+link make_node(char *);
+void insert(link);

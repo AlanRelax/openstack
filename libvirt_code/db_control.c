@@ -2,20 +2,18 @@
 #include "mylib.h"
 
 
-int db_init(entry **p) {
+static link head = NULL;
+
+int db_init() {
 
     int r,t;
     char *query;
     MYSQL mysql, *conn_ptr;
     MYSQL_RES *res;
     MYSQL_ROW row;
+    link current;
 
     mysql_init(&mysql);
-
-    entry *new;
-    entry *current;
-    current = (entry *)malloc(sizeof(entry));
-    *p = current;
 
     if (! &mysql) {
         fprintf(stderr, "mysql_init failed\n");
@@ -44,14 +42,8 @@ int db_init(entry **p) {
 
         if (row < 0)
             break;
-
-        new = (entry *)malloc(sizeof(entry));
-        if (new == NULL)
-            return FALSE;
-        current->link = new;
-        strncpy(new->host, row[0],10);
-        new->link = NULL;
-        current = new;
+        current = make_node(row[0]);
+        insert(current);
     }
 
     mysql_close(conn_ptr);
@@ -59,9 +51,37 @@ int db_init(entry **p) {
     return 1;
 }
 
-char *get_host(entry *p) {
-    
+link pop_node() {
 
-printf("%s ",p->host);
-    return p->host;
+    if (head == NULL)
+        return NULL;
+    else {
+        link p = head;
+        head = head->next;
+        return p;
+    }
 }
+
+void free_node(link p) {
+    free(p);
+}
+
+link make_node(char *item) {
+
+    link p = malloc(sizeof(*p));
+
+
+    if (p == NULL)
+        return FALSE;
+    strncpy(p->host, item, 10);
+    p->next = NULL;
+
+    return p;
+}
+
+void insert(link p) {
+
+    p->next = head;
+    head = p;
+}
+    
