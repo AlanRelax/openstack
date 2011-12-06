@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
     db_init(name, password);
     while ((p = pop_node()) != NULL ) {
         conn_init(p->host, &conn);
-        printf("%s", virConnectGetSysinfo(conn,0));
+        printf("%s:\n", p->host);
+        list_id_domain(conn);
         conn_close(&conn);
     }
 //    virDomainPtr dom = NULL;   /* the domain being checked */

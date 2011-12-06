@@ -26,3 +26,7 @@ link pop_node();
 void free_node(link);
 link make_node(char *);
 void insert(link);
+
+/* domain.c */
+int list_domain(virConnectPtr);
+int list_num_domain(virConnectPtr);

@@ -12,7 +12,6 @@ int db_init(char *name,char *password) {
     MYSQL_RES *res;
     MYSQL_ROW row;
     link current;
-printf("%s%s", name,password);
 
     mysql_init(&mysql);
 
