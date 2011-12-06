@@ -4,7 +4,7 @@
 
 static link head = NULL;
 
-int db_init() {
+int db_init(char *name,char *password) {
 
     int r,t;
     char *query;
@@ -12,6 +12,7 @@ int db_init() {
     MYSQL_RES *res;
     MYSQL_ROW row;
     link current;
+printf("%s%s", name,password);
 
     mysql_init(&mysql);
 
@@ -20,7 +21,7 @@ int db_init() {
         exit(1);
     }
 
-    conn_ptr = mysql_real_connect(&mysql, "localhost", "openstack", "0Penstack", "nova", 0, NULL, 0);
+    conn_ptr = mysql_real_connect(&mysql, "localhost", name, password, "nova", 0, NULL, 0);
 
     if (conn_ptr) {
         printf("Connection success\n");

@@ -10,12 +10,16 @@
 
 
 
-int main() {
+int main(int argc, char **argv) {
 
     link p;
     virConnectPtr conn;
+    char *name, *password;
 
-    db_init();
+    argv++;
+    name = *argv++;
+    password = *argv;
+    db_init(name, password);
     while ((p = pop_node()) != NULL ) {
         conn_init(p->host, &conn);
         printf("%s", virConnectGetSysinfo(conn,0));
