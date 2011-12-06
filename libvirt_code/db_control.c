@@ -1,19 +1,23 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <mysql/mysql.h>
+
+#include "mylib.h"
 
 
-db_init() {
+int db_init(entry **p) {
 
     int r,t;
     char *query;
     MYSQL mysql, *conn_ptr;
     MYSQL_RES *res;
     MYSQL_ROW row;
+
     mysql_init(&mysql);
 
-    if (!conn_ptr) {
+    entry *new;
+    entry *current;
+    current = (entry *)malloc(sizeof(entry));
+    *p = current;
+
+    if (! &mysql) {
         fprintf(stderr, "mysql_init failed\n");
         exit(1);
     }
@@ -41,15 +45,23 @@ db_init() {
         if (row < 0)
             break;
 
-        printf("%s ", row[0]);
+        new = (entry *)malloc(sizeof(entry));
+        if (new == NULL)
+            return FALSE;
+        current->link = new;
+        strncpy(new->host, row[0],10);
+        new->link = NULL;
+        current = new;
     }
 
     mysql_close(conn_ptr);
+
+    return 1;
 }
 
-int main() {
-
-    db_init();
+char *get_host(entry *p) {
     
-    return 0;
+
+printf("%s ",p->host);
+    return p->host;
 }
