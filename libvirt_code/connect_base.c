@@ -40,4 +40,3 @@ void conn_close(virConnectPtr *conn) {
     if (*conn != NULL)
         virConnectClose(*conn);
 }
-

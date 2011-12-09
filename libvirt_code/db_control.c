@@ -72,7 +72,7 @@ link make_node(char *item) {
 
 
     if (p == NULL)
-        return FALSE;
+        return NULL;
     strncpy(p->host, item, 10);
     p->next = NULL;
 

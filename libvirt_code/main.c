@@ -12,20 +12,41 @@
 
 int main(int argc, char **argv) {
 
-    link p;
+//    link p;
     virConnectPtr conn;
-    char *name, *password;
+//    char *name, *password;
 
-    argv++;
-    name = *argv++;
-    password = *argv;
-    db_init(name, password);
-    while ((p = pop_node()) != NULL ) {
-        conn_init(p->host, &conn);
-        printf("%s:\n", p->host);
-        list_id_domain(conn);
+//    argv++;
+//   name = *argv++;
+//    password = *argv;
+//    db_init(name, password);
+//    while ((p = pop_node()) != NULL ) {
+        conn_init("uec11-003", &conn);
+        printf("uec11-003:\n");
+/*
+int ids[5];
+int maxids = 5;
+int i, num;
+num = virConnectListDomains(conn, ids, maxids);
+    for(i = 0;i < num;i++) {
+        virDomainPtr dom = NULL;
+        dom = virDomainLookupByID(conn, ids[i]);
+    printf("%s:\n", virDomainGetName(dom));
+*/
+        virDomainPtr dom = NULL;
+        dom = virDomainLookupByID(conn, 7);
+        list_info_domain(dom);
+//list_disk_domain(dom);
+//char *xmldesc;
+//xmldesc = virDomainGetXMLDesc(dom, 0);
+//printf("%s\n", xmldesc);
+//free(xmldesc);
+list_network_domain(dom);
+        virDomainFree(dom);
+ //   }
+
         conn_close(&conn);
-    }
+//    }
 //    virDomainPtr dom = NULL;   /* the domain being checked */
 //    virDomainInfo info;        /* the information being fetched */
 /*    int ret;

@@ -4,9 +4,11 @@
 #include <malloc.h>
 #include <mysql/mysql.h>
 #include <stdlib.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
-#define FALSE 0
-#define TRUE 1
+#define FALSE 1
+#define TRUE 0
 
 typedef struct NODE *link;
 struct NODE {
@@ -28,5 +30,11 @@ link make_node(char *);
 void insert(link);
 
 /* domain.c */
-int list_domain(virConnectPtr);
-int list_num_domain(virConnectPtr);
+void list_id_domain(virConnectPtr);
+int get_num_domain(virConnectPtr);
+void list_info_domain(virDomainPtr);
+void list_cpu_domain();
+void list_disk_domain(virDomainPtr);
+int list_network_domain(virDomainPtr);
+
+/* myxml.c */
