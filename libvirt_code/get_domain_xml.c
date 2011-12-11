@@ -10,7 +10,7 @@
 
 
 
-int main(int argc, char **argv) {
+int main() {
 
 //    link p;
     virConnectPtr conn;
@@ -21,31 +21,30 @@ int main(int argc, char **argv) {
 //    password = *argv;
 //    db_init(name, password);
 //    while ((p = pop_node()) != NULL ) {
-    char hostname[256];
-    gethostname(hostname, sizeof(hostname));
-        conn_init(hostname, &conn);
-        printf("%s:\n", virConnectGetHostname(conn));
-/*
-int ids[5];
-int maxids = 5;
-int i, num;
-num = virConnectListDomains(conn, ids, maxids);
+    char hostname[15]="uec11-003";
+    //gethostname(hostname, sizeof(hostname));
+    conn_init(hostname, &conn);
+  
+    int ids[10];
+    int maxids = 10;
+    int i, num;
+    FILE *fp;
+    num = virConnectListDomains(conn, ids, maxids);
     for(i = 0;i < num;i++) {
         virDomainPtr dom = NULL;
         dom = virDomainLookupByID(conn, ids[i]);
-    printf("%s:\n", virDomainGetName(dom));
-*/
-        virDomainPtr dom = NULL;
-        dom = virDomainLookupByID(conn, 7);
-        list_info_domain(dom);
+    //    printf("%s:\n", virDomainGetName(dom));
 //list_disk_domain(dom);
-//char *xmldesc;
-//xmldesc = virDomainGetXMLDesc(dom, 0);
-//printf("%s\n", xmldesc);
-//free(xmldesc);
-list_network_domain(dom);
+        char *xmldesc;
+        xmldesc = virDomainGetXMLDesc(dom, 0);
+        if ((fp = fopen(virDomainGetName(dom), "w")) == NULL) {
+            printf("Cannot open file test\n");
+        }
+        fprintf(fp,xmldesc);
+        fclose(fp);
+        free(xmldesc);
         virDomainFree(dom);
- //   }
+    }
 
         conn_close(&conn);
 //    }

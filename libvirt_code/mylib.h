@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <netdb.h>
 
 #define FALSE 1
 #define TRUE 0
