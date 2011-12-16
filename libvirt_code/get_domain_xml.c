@@ -32,10 +32,10 @@ int main() {
 //list_disk_domain(dom);
             char *xmldesc;
             xmldesc = virDomainGetXMLDesc(dom, 0);
-            if ((fp = fopen(virDomainGetName(dom), "w")) == NULL) {
+            if ((fp = fopen(virDomainGetName(dom), "wt")) == NULL) {
                 printf("Cannot open file test\n");
             }   
-            fprintf(fp,xmldesc);
+            fprintf(fp,"%s",xmldesc);
             fclose(fp);
 
             free(xmldesc);
