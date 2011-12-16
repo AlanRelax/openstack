@@ -55,11 +55,11 @@ void list_info_domain(virDomainPtr domain) {
     realTime = 1000000 * (endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec);
     cpuUsage = cpuTime / (double)(realTime);
 //    printf("%s:\n", virDomainGetName(domain));
-    printf("\t\tstate is %d\n", info.state);
-    printf("\t\tvCPU is %d\n", info.nrVirtCpu);
-    printf("\t\tMAXmemory is %ld\n", info.maxMem/1024);
-    printf("\t\tmemory is %ld\n", info.memory/1024);
-    printf("\t\tcpuUsage is %.2f%\n", cpuUsage*100);
+//    printf("\t\tstate is %d\n", info.state);
+//    printf("\t\tvCPU is %d\n", info.nrVirtCpu);
+//    printf("\t\tMAXmemory is %ld\n", info.maxMem/1024);
+//    printf("\t\tmemory is %ld\n", info.memory/1024);
+    printf("\t\tcpuUsage is %.2f%%\n", cpuUsage*100);
 
 
 //    printf("\t\trCPU is %d\n", vinfo.cpu);
@@ -119,14 +119,12 @@ void list_disk_domain(virDomainPtr domain) {
     printf("\t\twr_bytes: %lld\n", stats.wr_bytes);
 }
 
-int list_network_domain(virDomainPtr domain) {
+int list_network_domain(virDomainPtr domain, const char *path) {
 
-    const char *path;
     virDomainInterfaceStatsStruct stats;
     size_t size;
 
     size = sizeof(stats);
-    path = "vnet1";
     int interval = 2;
 
     if( virDomainInterfaceStats(domain, path, &stats, size) )

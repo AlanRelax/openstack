@@ -36,6 +36,11 @@ int get_num_domain(virConnectPtr);
 void list_info_domain(virDomainPtr);
 void list_cpu_domain();
 void list_disk_domain(virDomainPtr);
-int list_network_domain(virDomainPtr);
+int list_network_domain(virDomainPtr, const char *);
 
 /* myxml.c */
+void print_element_names(xmlNode *);
+int get_element_key(xmlDocPtr, xmlNodePtr,xmlChar *);
+void get_element_prop(xmlNodePtr, xmlChar *, char **);
+int get_element_node(xmlNodePtr,xmlChar *);
+int get_vnet(const char *, char **);

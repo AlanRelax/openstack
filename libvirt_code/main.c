@@ -21,31 +21,32 @@ int main(int argc, char **argv) {
 //    password = *argv;
 //    db_init(name, password);
 //    while ((p = pop_node()) != NULL ) {
-    char hostname[256];
-    gethostname(hostname, sizeof(hostname));
+    char hostname[256] = "uec11-003";
+//    gethostname(hostname, sizeof(hostname));
         conn_init(hostname, &conn);
         printf("%s:\n", virConnectGetHostname(conn));
-/*
-int ids[5];
-int maxids = 5;
-int i, num;
-num = virConnectListDomains(conn, ids, maxids);
+
+    int num = virConnectNumOfDomains(conn);
+    int ids[num];
+    int i;
+    virConnectListDomains(conn, ids, num);
     for(i = 0;i < num;i++) {
+        char *vnet;
+        vnet = malloc(10*sizeof(char));
         virDomainPtr dom = NULL;
         dom = virDomainLookupByID(conn, ids[i]);
-    printf("%s:\n", virDomainGetName(dom));
-*/
-        virDomainPtr dom = NULL;
-        dom = virDomainLookupByID(conn, 7);
+        printf("%s:\n", virDomainGetName(dom));
+
         list_info_domain(dom);
-//list_disk_domain(dom);
+        list_disk_domain(dom);
 //char *xmldesc;
 //xmldesc = virDomainGetXMLDesc(dom, 0);
 //printf("%s\n", xmldesc);
 //free(xmldesc);
-list_network_domain(dom);
+        get_vnet(virDomainGetName(dom), &vnet);
+        list_network_domain(dom, vnet);
         virDomainFree(dom);
- //   }
+    }
 
         conn_close(&conn);
 //    }
