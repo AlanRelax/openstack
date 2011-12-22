@@ -59,7 +59,7 @@ void list_info_domain(virDomainPtr domain) {
 //    printf("\t\tvCPU is %d\n", info.nrVirtCpu);
 //    printf("\t\tMAXmemory is %ld\n", info.maxMem/1024);
 //    printf("\t\tmemory is %ld\n", info.memory/1024);
-    printf("\t\tcpuUsage is %.2f%%\n", cpuUsage*100);
+    printf("cpu_sys:%.2f", cpuUsage*100);
 
 
 //    printf("\t\trCPU is %d\n", vinfo.cpu);
@@ -111,12 +111,12 @@ void list_disk_domain(virDomainPtr domain) {
     int rd_usage = rd_bytes/interval;
     int wr_usage= wr_bytes/interval;
 //    printf("%s:\n", virDomainGetName(domain));
-    printf("\t\tread: %dbytes/s\n", rd_usage);
-    printf("\t\twrite: %dbytes/s\n", wr_usage);
-    printf("\t\trd_req: %lld\n", stats.rd_req);
-    printf("\t\trd_bytes: %lld\n", stats.rd_bytes);
-    printf("\t\twr_req: %lld\n", stats.wr_req);
-    printf("\t\twr_bytes: %lld\n", stats.wr_bytes);
+    printf("disk_sda_r:%d|", rd_usage);
+    printf("disk_sda_w:%d", wr_usage);
+//    printf("\t\trd_req: %lld\n", stats.rd_req);
+//    printf("\t\trd_bytes: %lld\n", stats.rd_bytes);
+//    printf("\t\twr_req: %lld\n", stats.wr_req);
+//    printf("\t\twr_bytes: %lld\n", stats.wr_bytes);
 }
 
 int list_network_domain(virDomainPtr domain, const char *path) {
@@ -142,12 +142,12 @@ int list_network_domain(virDomainPtr domain, const char *path) {
     int rx_usage = (end_rx_bytes - start_rx_bytes)/interval;
     int tx_usage = (end_tx_bytes - start_tx_bytes)/interval;
 
-    printf("\t\trx usage: %d bytes/s", rx_usage);
-    printf("\trx bytes: %lld bytes", stats.rx_bytes);
-    printf("\t\trx packets: %lld", stats.rx_packets);
-    printf("\trx errs: %lld\n", stats.rx_errs);
-    printf("\t\ttx usage: %d bytes/s", tx_usage);
-    printf("\ttx bytes: %lld bytes", stats.tx_bytes);
-    printf("\t\ttx packets: %lld", stats.tx_packets);
-    printf("\ttx errs: %lld\n", stats.tx_errs);
+    printf("eth0_receive:%d|", rx_usage);
+//    printf("\trx bytes: %lld bytes", stats.rx_bytes);
+//    printf("\t\trx packets: %lld", stats.rx_packets);
+//    printf("\trx errs: %lld\n", stats.rx_errs);
+    printf("eth0_transmit:%d", tx_usage);
+//    printf("\ttx bytes: %lld bytes", stats.tx_bytes);
+//    printf("\t\ttx packets: %lld", stats.tx_packets);
+//    printf("\ttx errs: %lld\n", stats.tx_errs);
 }

@@ -7,6 +7,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <netdb.h>
+#include <time.h>
 
 #define FALSE 1
 #define TRUE 0
@@ -44,3 +45,6 @@ int get_element_key(xmlDocPtr, xmlNodePtr,xmlChar *);
 void get_element_prop(xmlNodePtr, xmlChar *, char **);
 int get_element_node(xmlNodePtr,xmlChar *);
 int get_vnet(const char *, char **);
+
+/* mystd.c */
+void get_time();

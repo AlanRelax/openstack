@@ -15,8 +15,8 @@ int main() {
     virConnectPtr conn;
     int i, num;
 
-    char hostname[15]="uec11-003";
-    //gethostname(hostname, sizeof(hostname));
+    char hostname[15];
+    gethostname(hostname, sizeof(hostname));
     conn_init(hostname, &conn);
     num = get_num_domain(conn); 
 
