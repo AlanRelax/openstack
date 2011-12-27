@@ -4,6 +4,7 @@
 
 #include "mylib.h"
 
+
 void list_id_domain(virConnectPtr conn) {
 
     int ids[10];
@@ -25,15 +26,25 @@ int get_num_domain(virConnectPtr conn) {
     return num;
 }
 
-void list_info_domain(virDomainPtr domain) {
+int list_num_core(virConnectPtr conn) {
+
+    virNodeInfo info; 
+
+    virNodeGetInfo(conn, &info);
+
+    return info.cpus;
+
+}
+
+void list_info_domain(virDomainPtr domain, int n) {
 
     virDomainInfo info;
 //    virVcpuInfo vinfo;
     int interval = 2;
     struct timeval startTime;
     struct timeval endTime;
-    int realTime;
-    int cpuTime;
+    unsigned long long realTime;
+    unsigned long long cpuTime;
     double cpuUsage;
 
     virDomainGetInfo(domain, &info);
@@ -50,16 +61,16 @@ void list_info_domain(virDomainPtr domain) {
     if (gettimeofday(&endTime, NULL) == -1) {
         printf("Failed to get end time\n");
     }
-//    printf("%lld-----%lld\n", startCpuTime, endCpuTime);
-    cpuTime = (endCpuTime - startCpuTime)/1000;
+    cpuTime = (endCpuTime - startCpuTime);
     realTime = 1000000 * (endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec);
-    cpuUsage = cpuTime / (double)(realTime);
+    cpuUsage = cpuTime / n   ;
+    cpuUsage /= (realTime * 10);
 //    printf("%s:\n", virDomainGetName(domain));
 //    printf("\t\tstate is %d\n", info.state);
 //    printf("\t\tvCPU is %d\n", info.nrVirtCpu);
 //    printf("\t\tMAXmemory is %ld\n", info.maxMem/1024);
 //    printf("\t\tmemory is %ld\n", info.memory/1024);
-    printf("cpu_sys:%.2f", cpuUsage*100);
+    printf("cpu_sys:%.2f", cpuUsage);
 
 
 //    printf("\t\trCPU is %d\n", vinfo.cpu);

@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         printf("%s|", virDomainGetName(dom));
         get_time();
         printf("|");
-        list_info_domain(dom);
+        list_info_domain(dom, list_num_core(conn));
         printf("|");
         list_disk_domain(dom);
         printf("|");

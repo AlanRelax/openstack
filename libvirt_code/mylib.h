@@ -34,10 +34,11 @@ void insert(link);
 /* domain.c */
 void list_id_domain(virConnectPtr);
 int get_num_domain(virConnectPtr);
-void list_info_domain(virDomainPtr);
+void list_info_domain(virDomainPtr,int n);
 void list_cpu_domain();
 void list_disk_domain(virDomainPtr);
 int list_network_domain(virDomainPtr, const char *);
+int list_num_core(virConnectPtr);
 
 /* myxml.c */
 void print_element_names(xmlNode *);
