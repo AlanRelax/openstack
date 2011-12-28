@@ -6,7 +6,7 @@ do
     sudo kill $i
 done
 ps aux | grep [n]ova-compute > /dev/null
-if [ $? -eq 1 ];then
+if [ $? -ne 0 ];then
     echo "Restarting libvirt-bin ..."
     sudo /etc/init.d/libvirt-bin restart
     if [ "$?" -eq 0 ]; then
