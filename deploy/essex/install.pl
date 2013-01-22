@@ -14,10 +14,23 @@ use Config::IniFiles;
 
 $^I = ".bak";
 
-sub parse {
+sub exist_app {
+    system "dpkg", "-l", @_;
+}
+
+sub config_app {
     my %ini;
-    tie %ini, 'Config::IniFiles', ( -file => "./config.ini", -default => "DEFAULT" );
-    $ini{$_[0]}{$_[1]};
+    my %writeini;
+    tie %ini, 'Config::IniFiles', ( -file => $_[0] );
+    tie %writeini, 'Config::IniFiles', ( -file => $_[1] );
+    foreach (keys %ini) {
+	my $section =$_;
+	my @keys = keys %{$ini{$section}};
+	foreach (@keys) {
+	    $writeini{$section}{$_} = $ini{$section}{$_};
+	}
+    }
+    tied(%writeini)->WriteConfig($_[1]) or die "Cannot write .";
 }
 
 sub install_common {
@@ -59,16 +72,13 @@ sub install_rabbitmq {
 }
 
 sub install_keystone {
-    system "apt-get", "install", "-y", "keystone", "python-keystone", "python-keystoneclient";
-    @ARGV = qw ! /etc/keystone/keystone.conf/ !;
-    while( <> ) {
-	
+    system "apt-get", "install", "-y", "keystone", "python-keystone", "python-keystoneclient" if &exist_app("keystone");
+    &config_app("./config/keystone.conf", "/etc/keystone/keystone.conf");
+    system "service", "keystone", "restart";
+    system "keystone-manage", "db_sync";
 }
 
 #&install_common;
-&install_mysql if ( system "dpkg", "-l", "mysql-server");
-&install_rabbitmq("openstack") if ( system "dpkg", "-l", "rabbitmq-server");
+#&install_mysql if ( system "dpkg", "-l", "mysql-server");
+#&install_rabbitmq("openstack") if ( system "dpkg", "-l", "rabbitmq-server");
 &install_keystone;
-
-my $result = &parse("MYSQL", "USER");
-print $result;
