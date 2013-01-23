@@ -5,7 +5,6 @@ use 5.010001;
 use Config::IniFiles;
 
 
-
 #sub parse {
 #    my $cfg = Config::IniFiles->new( -file => "./config.ini", -default => "DEFAULT" );
 #    my @value = $cfg->val( 'MYSQL', 'USER' );
@@ -13,6 +12,7 @@ use Config::IniFiles;
 #}
 
 $^I = ".bak";
+my $ini_file = "./config.ini";
 
 sub exist_app {
     system "dpkg", "-l", @_;
@@ -31,6 +31,13 @@ sub config_app {
 	}
     }
     tied(%writeini)->WriteConfig($_[1]) or die "Cannot write .";
+}
+
+sub get_ini {
+    my $cfg = Config::IniFiles->new( -file => $_[0], -default => "DEFAULT" );
+    my $value = $cfg->val($_[1], $_[2]);
+    $value =~ s/,\s+/,/g;
+    split(",", $value);
 }
 
 sub install_common {
@@ -63,6 +70,16 @@ sub install_mysql {
 	}
     }
     system "service", "mysql", "restart";
+    my $root_pass = (&get_ini($ini_file, "MYSQL", "root_password"))[0];
+    my $host = (&get_ini($ini_file, "MYSQL", "host"))[0];
+    my $db_pass = (&get_ini($ini_file, "MYSQL", "db_password"))[0];
+    my $dbh = DBI->connect("DBI:mysql:mysql:$host:3306", "root", $root_pass, { RaiseError => 1, AutoCommit => 1 });
+    foreach (&get_ini($ini_file, "MYSQL", "db")) {
+	$dbh->do(qq{CREATE DATABASE $_});
+	my $dbadmin = $_."dbadmin";
+	$dbh->do(qq{GRANT ALL PRIVILEGES ON $_.* TO "$dbadmin"@'%' IDENTIFIED BY "$db_pass"});
+    }
+    print $root_pass;
 }
 
 sub install_rabbitmq {
@@ -76,9 +93,22 @@ sub install_keystone {
     &config_app("./config/keystone.conf", "/etc/keystone/keystone.conf");
     system "service", "keystone", "restart";
     system "keystone-manage", "db_sync";
+    my $token = (&get_ini("./config/keystone.conf", "DEFAULT", "admin_token"))[0];
+    my $endpoint = (&get_ini($ini_file, "KEYSTONE", "endpoint"))[0];
+    $ENV{SERVICE_TOKEN} = $token;
+    $ENV{SERVICE_ENDPOINT} = $endpoint;
+    foreach (&get_ini($ini_file, "KEYSTONE", "service")) {
+	my @service = &get_ini($ini_file, "KEYSTONE_SERVICE", $_);
+	system "keystone", "service-create", "--name", $_ , "--type", $service[0], "--description", $service[1], "\n";
+    }
 }
 
 #&install_common;
 #&install_mysql if ( system "dpkg", "-l", "mysql-server");
 #&install_rabbitmq("openstack") if ( system "dpkg", "-l", "rabbitmq-server");
-&install_keystone;
+#&install_keystone;
+foreach (&get_ini($ini_file, "KEYSTONE", "service")) {
+    my @service = &get_ini($ini_file, "KEYSTONE_SERVICE", $_);
+    print "keystone", "service-create", "--name", $_ , "--type", $service[0], "--description", $service[1], "\n";
+}
+
