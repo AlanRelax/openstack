@@ -133,8 +133,9 @@ sub install_glance {
 }
 
 sub install_nova {
-#my @nova_pkg = qq/apt-get install -y nova-api nova-cert nova-common/;
-#system(@nova_pkg);
+    my @nova_service = &get_ini($ini_file, "NOVA", "service");
+    unshift(@nova_service, ("apt-get", "install", "-y"));
+    system(@nova_service);
 #&config_app("./config/nova/nova.conf", "/etc/nova/nova.conf");
     my @nova_service = &get_ini($ini_file, "NOVA", "service");
     foreach (@nova_service) {
@@ -149,6 +150,10 @@ sub install_nova {
     foreach (@nova_service) {
 	print "service", $_, "restart";
     }
+}
+
+sub install_dashboard {
+    system "apt-get", "install", "-y", "apache2", "libapache2-mod-wsgi", "openstack-dashboard";
 }
 
 #&install_common;
