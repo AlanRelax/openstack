@@ -80,12 +80,11 @@ sub install_mysql {
 	my $db_admin = $_."dbadmin";
 #	$dbh->do(qq{GRANT ALL PRIVILEGES ON $_.* TO "$dbadmin"@'%' IDENTIFIED BY "$db_pass"});
 	my $query = qq{GRANT ALL PRIVILEGES ON $_.* TO ?\@'%' IDENTIFIED BY ?};
-	dbh->do($query, undef, $db_admin, $db_pass);
+	$dbh->do($query, undef, $db_admin, $db_pass);
 	my $query = qq{GRANT ALL PRIVILEGES ON $_.* TO ?\@'localhost' IDENTIFIED BY ?};
-	dbh->do($query, undef, $db_admin, $db_pass);
+	$dbh->do($query, undef, $db_admin, $db_pass);
     }
     $dbh->disconnect();
-    print $root_pass;
 }
 
 sub install_rabbitmq {
@@ -98,25 +97,28 @@ sub install_keystone {
     system "apt-get", "install", "-y", "keystone", "python-keystone", "python-keystoneclient" if &exist_app("keystone");
     &config_app("./config/keystone/keystone.conf", "/etc/keystone/keystone.conf");
     system "service", "keystone", "restart";
-    system "keystone-manage", "db_sync";
-    my $token = (&get_ini("./config/keystone.conf", "DEFAULT", "admin_token"))[0];
-    my $endpoint = (&get_ini($ini_file, "KEYSTONE", "endpoint"))[0];
-    $ENV{SERVICE_TOKEN} = $token;
-    $ENV{SERVICE_ENDPOINT} = $endpoint;
-    my $db_pass = (&get_ini($ini_file, "MYSQL", "db_password"))[0];
-    my $region = (&get_ini($ini_file, "KEYSTONE", "region"))[0];
-    my $dbh = DBI->connect("DBI:mysql:keystone:$host:3306", "keystonedbadmin", $db_pass, { RaiseError => 1, AutoCommit => 1});
-    foreach (&get_ini($ini_file, "KEYSTONE", "service")) {
-	my @service = &get_ini($ini_file, "KEYSTONE_SERVICE", $_);
-	system "keystone", "service-create", "--name", $_ , "--type", $service[0], "--description", $service[1], "\n";
-	my $sth = $dbh->prepare('SELECT ID FROM service WHERE type=?');
-	$sth->bind_param(1, $service[0]);
-	$sth->execute();
-	my $result = $sth->fetchrow_hashref();
-	my @endpoint = &get_ini($ini_file, "KEYSTONE_ENDPOINT", $service[0]);
-	system "keystone", "endpoint-create", "--region", $endpoint[0], "--service_id", $result->{id}, "--publicurl", $endpoint[1], "--adminurl", $endpoint[2], "--internalurl", $endpoint[3];
-    }
-    $dbh->disconnect();
+#    sleep(10);
+#    system "keystone-manage", "db_sync";
+#    sleep(20);
+#    my $token = (&get_ini("./config/keystone/keystone.conf", "DEFAULT", "admin_token"))[0];
+#    my $endpoint = (&get_ini($ini_file, "KEYSTONE", "endpoint"))[0];
+#    $ENV{SERVICE_TOKEN} = $token;
+#    $ENV{SERVICE_ENDPOINT} = $endpoint;
+#    my $db_pass = (&get_ini($ini_file, "MYSQL", "db_password"))[0];
+#    my $host = (&get_ini($ini_file, "MYSQL", "host"))[0];
+#    my $region = (&get_ini($ini_file, "KEYSTONE", "region"))[0];
+#    my $dbh = DBI->connect("DBI:mysql:keystone:$host:3306", "keystonedbadmin", $db_pass, { RaiseError => 1, AutoCommit => 1});
+#    foreach (&get_ini($ini_file, "KEYSTONE", "service")) {
+#	my @service = &get_ini($ini_file, "KEYSTONE_SERVICE", $_);
+#	system "keystone", "service-create", "--name", $_ , "--type", $service[0], "--description", $service[1];
+#	my $sth = $dbh->prepare('SELECT ID FROM service WHERE type=?');
+#	$sth->bind_param(1, $service[0]);
+#	$sth->execute();
+#	my $result = $sth->fetchrow_hashref();
+#	my @endpoint = &get_ini($ini_file, "KEYSTONE_ENDPOINT", $service[0]);
+#	system "keystone", "endpoint-create", "--region", $region, "--service_id", $result->{ID}, "--publicurl", $endpoint[0], "--adminurl", $endpoint[1], "--internalurl", $endpoint[2];
+#    }
+#    $dbh->disconnect();
 }
 
 sub install_glance {
@@ -139,16 +141,16 @@ sub install_nova {
 #&config_app("./config/nova/nova.conf", "/etc/nova/nova.conf");
     my @nova_service = &get_ini($ini_file, "NOVA", "service");
     foreach (@nova_service) {
-	print "service", $_, "stop";
+	system "service", $_, "stop";
     }
     sleep(10);
     foreach (@nova_service) {
-	print "service", $_, "start";
+	system "service", $_, "start";
     }
     sleep(10);
-    print "nova-manage", "db", "sync";
+    system "nova-manage", "db", "sync";
     foreach (@nova_service) {
-	print "service", $_, "restart";
+	system "service", $_, "restart";
     }
 }
 
@@ -156,11 +158,10 @@ sub install_dashboard {
     system "apt-get", "install", "-y", "apache2", "libapache2-mod-wsgi", "openstack-dashboard";
 }
 
-#&install_common;
-#&install_mysql if ( system "dpkg", "-l", "mysql-server");
-#&install_rabbitmq("openstack") if ( system "dpkg", "-l", "rabbitmq-server");
-#&install_keystone;
-foreach (&get_ini($ini_file, "KEYSTONE", "service")) {
-    my @service = &get_ini($ini_file, "KEYSTONE_SERVICE", $_);
-    print "keystone", "service-create", "--name", $_ , "--type", $service[0], "--description", $service[1], "\n";
-}
+&install_common;
+&install_mysql if ( system "dpkg", "-l", "mysql-server");
+&install_rabbitmq("cloudopen") if ( system "dpkg", "-l", "rabbitmq-server");
+&install_keystone;
+&install_glance;
+&install_nova;
+&install_dashboard;
